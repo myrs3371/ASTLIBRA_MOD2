@@ -207,13 +207,100 @@ void InstallSaveTrace()
     Log(g_realCreateFileW && g_realWriteFile ? "save trace installed" : "save trace install failed");
 }
 
-// 边沿检测的按键：返回 true 表示刚按下。
-bool Pressed(int virtualKey, bool& wasDown)
+// ---- 手柄（XInput） ----
+// 游戏由 DxLib 运行时加载 xinput1_3.dll，这里自己也加载一份用来读按键。
+// 不静态链接 xinput.lib，避免多一个硬依赖，结构体按官方布局自行声明。
+struct XInputGamepad {
+    WORD  wButtons;
+    BYTE  bLeftTrigger;
+    BYTE  bRightTrigger;
+    SHORT sThumbLX;
+    SHORT sThumbLY;
+    SHORT sThumbRX;
+    SHORT sThumbRY;
+};
+struct XInputState {
+    DWORD dwPacketNumber;
+    XInputGamepad Gamepad;
+};
+
+// XInput 按键位（取值同 xinput.h）
+constexpr WORD kPadStart        = 0x0010;
+constexpr WORD kPadBack         = 0x0020;
+constexpr WORD kPadLeftThumb    = 0x0040;
+constexpr WORD kPadRightThumb   = 0x0080;
+constexpr WORD kPadLeftShoulder = 0x0100;
+constexpr WORD kPadRightShoulder = 0x0200;
+
+// 触发「随时存档」的手柄键：View 键（⧉，老手柄上叫 Back）。
+// 这是「必须同时按住」的掩码，所以也能写成组合键，例如：
+//   kPadBack | kPadStart                     View + Menu
+//   kPadLeftShoulder | kPadRightShoulder     LB + RB
+constexpr WORD kPadTriggerMask = kPadBack;
+
+using XInputGetStateFn = DWORD(WINAPI*)(DWORD, XInputState*);
+XInputGetStateFn g_xInputGetState = nullptr;
+
+void LoadXInput()
 {
-    const bool isDown = (GetAsyncKeyState(virtualKey) & 0x8000) != 0;
+    const wchar_t* candidates[] = { L"XInput1_4.dll", L"XInput1_3.dll", L"XInput9_1_0.dll" };
+    for (const wchar_t* name : candidates) {
+        HMODULE lib = LoadLibraryW(name);
+        if (lib == nullptr) {
+            continue;
+        }
+        auto fn = reinterpret_cast<XInputGetStateFn>(GetProcAddress(lib, "XInputGetState"));
+        if (fn != nullptr) {
+            g_xInputGetState = fn;
+            Log(std::string("xinput loaded: ") + Narrow(name));
+            return;
+        }
+        FreeLibrary(lib);
+    }
+    Log("xinput unavailable; gamepad trigger disabled (F5 still works)");
+}
+
+// 任意一个已连接手柄上，触发组合键是否全部按住。
+bool PadTriggerDown()
+{
+    if (g_xInputGetState == nullptr) {
+        return false;
+    }
+    for (DWORD slot = 0; slot < 4; ++slot) {
+        XInputState state{};
+        if (g_xInputGetState(slot, &state) == ERROR_SUCCESS &&
+            (state.Gamepad.wButtons & kPadTriggerMask) == kPadTriggerMask) {
+            return true;
+        }
+    }
+    return false;
+}
+
+// 键盘和手柄共用同一套判定与日志格式，避免两边行为不一致。
+void TriggerSaveMenu(uintptr_t base, const char* source)
+{
+    const uint8_t before = ReadScreenId(base);
+    // 只在场景界面触发，避免和其它界面状态互相干扰。
+    if (before == kScreenField) {
+        OpenSaveMenu(base);
+        Log(std::string(source) + " save: screen 0 -> 1");
+    } else {
+        Log(std::string(source) + " ignored: screen=" + std::to_string(before) + " (not in field)");
+    }
+}
+
+// 边沿检测：返回 true 表示这一刻刚从「未按下」变成「按下」。
+bool RisingEdge(bool isDown, bool& wasDown)
+{
     const bool pressed = isDown && !wasDown;
     wasDown = isDown;
     return pressed;
+}
+
+// 边沿检测的键盘按键。
+bool Pressed(int virtualKey, bool& wasDown)
+{
+    return RisingEdge((GetAsyncKeyState(virtualKey) & 0x8000) != 0, wasDown);
 }
 
 DWORD WINAPI Worker(void*)
@@ -227,18 +314,28 @@ DWORD WINAPI Worker(void*)
     }
     Log("ASTLIBRA V1.5.0 detected, base=" + Hex(base));
     InstallSaveTrace();
+    LoadXInput();
 
-    bool f5 = false, f7 = false, f8 = false;
+    // 键盘热键表：按下其中任意一个都打开存档界面。
+    // 想加键就往这张表里加一行，name 会出现在日志里，例如 { 'M', "M", false }。
+    struct Hotkey {
+        int key;
+        const char* name;
+        bool wasDown;
+    };
+    Hotkey hotkeys[] = {
+        { VK_F5, "F5", false },
+    };
+
+    bool f7 = false, f8 = false, pad = false;
     while (WaitForSingleObject(g_stopEvent, 25) == WAIT_TIMEOUT) {
-        if (Pressed(VK_F5, f5)) {
-            const uint8_t before = ReadScreenId(base);
-            // 只在场景界面触发，避免和其它界面状态互相干扰。
-            if (before == kScreenField) {
-                OpenSaveMenu(base);
-                Log("F5 save: screen 0 -> 1");
-            } else {
-                Log("F5 ignored: screen=" + std::to_string(before) + " (not in field)");
+        for (auto& hotkey : hotkeys) {
+            if (Pressed(hotkey.key, hotkey.wasDown)) {
+                TriggerSaveMenu(base, hotkey.name);
             }
+        }
+        if (RisingEdge(PadTriggerDown(), pad)) {
+            TriggerSaveMenu(base, "Pad View");
         }
         if (Pressed(VK_F8, f8)) {
             ForceFieldScreen(base);
