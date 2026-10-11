@@ -1,0 +1,8 @@
+<Solution>
+  <Configurations>
+    <Platform Name="x64" />
+    <Platform Name="x86" />
+  </Configurations>
+  <Project Path="AstlibraMod/AstlibraMod.vcxproj" Id="25322a2d-7685-4060-a9a7-0682dd91bb13" />
+  <Project Path="DllLoaderTest/DllLoaderTest.vcxproj" Id="5e8634bc-7bb8-4e3c-9ff2-37284569bf43" />
+</Solution>

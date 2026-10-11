@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ASTLIBRA C++ Mod 学习路线</title>
+  <style>
+    :root { --bg:#08080c; --surface:rgba(255,255,255,.04); --border:rgba(255,255,255,.08); --text:#ededef; --muted:rgba(255,255,255,.55); --accent-1:#06b6d4; --accent-2:#34d399; --green:#34d399; --amber:#fbbf24; --radius:8px; }
+    * { box-sizing:border-box; }
+    body { margin:0; color:var(--text); background:var(--bg); font-family:system-ui,"Microsoft YaHei",sans-serif; }
+    main { width:min(720px,calc(100% - 32px)); margin:48px auto; }
+    h1 { margin:0 0 8px; font-size:32px; letter-spacing:0; }
+    .meta { color:var(--muted); margin-bottom:28px; }
+    .progress { height:8px; background:var(--surface); border-radius:4px; overflow:hidden; margin-bottom:32px; }
+    .progress span { display:block; width:57%; height:100%; background:linear-gradient(90deg,var(--accent-1),var(--accent-2)); }
+    .timeline { display:grid; gap:12px; }
+    .node { padding:16px 18px; border:1px solid var(--border); border-radius:var(--radius); background:var(--surface); }
+    .node.active { border-color:var(--accent-1); box-shadow:0 0 24px rgba(6,182,212,.12); }
+    .row { display:flex; align-items:center; justify-content:space-between; gap:12px; }
+    h2 { margin:0; font-size:17px; letter-spacing:0; }
+    .badge { color:var(--muted); font:12px ui-monospace,monospace; white-space:nowrap; }
+    .active .badge { color:var(--accent-2); }
+    p { margin:8px 0 0; color:var(--muted); line-height:1.55; }
+    @media(max-width:480px) { main{margin:24px auto} h1{font-size:25px}.row{align-items:flex-start} }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>ASTLIBRA C++ Mod</h1>
+    <div class="meta">零基础实践路线 · 当前进度 57%</div>
+    <div class="progress"><span style="width:57%"></span></div>
+    <section class="timeline">
+      <article class="node done"><div class="row"><h2>1. 认识项目与编译配置</h2><span class="badge">已掌握 · 80%</span></div><p>理解 Solution、Project、Release、x64 与 Build。</p></article>
+      <article class="node done"><div class="row"><h2>2. 首次编译 DLL</h2><span class="badge">已掌握 · 85%</span></div><p>能够构建 Release x64 DLL 并定位输出文件。</p></article>
+      <article class="node active"><div class="row"><h2>3. DLL 加载生命周期</h2><span class="badge">进行中 · 75%</span></div><p>已预测 loader lock 重入可能卡住；待解释等待关系。</p></article>
+      <article class="node active"><div class="row"><h2>4. 写入加载日志</h2><span class="badge">进行中 · 70%</span></div><p>已发现错误处理不足，并识别出 DllMain 内复杂 I/O 的卡死风险。</p></article>
+      <article class="node done"><div class="row"><h2>5. 创建独立测试程序</h2><span class="badge">已掌握 · 85%</span></div><p>已在 Visual Studio 中创建并运行 DllLoaderTest。</p></article>
+      <article class="node active"><div class="row"><h2>6. 加载与卸载 DLL</h2><span class="badge">进行中 · 78%</span></div><p>下一步直接修改 DllLoader.cpp：线程句柄先关闭，进程句柄保留到 DLL 注入结束后关闭。</p></article>
+      <article class="node done"><div class="row"><h2>7. 端到端验证</h2><span class="badge">已掌握 · 85%</span></div><p>已确认测试程序加载 DLL，并生成加载日志。</p></article>
+    </section>
+  </main>
+</body>
+</html>

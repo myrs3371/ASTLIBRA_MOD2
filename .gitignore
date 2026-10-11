@@ -1,0 +1,39 @@
+# ============ Visual Studio / MSVC 构建产物 ============
+# .vs 里是 VS 的缓存，单个 .ipch 就有 200+ MB，绝对不能进仓库
+.vs/
+*.ipch
+*.pch
+*.obj
+*.iobj
+*.ipdb
+*.idb
+*.pdb
+*.ilk
+*.exp
+*.lib
+*.recipe
+*.tlog/
+*.Build.CppClean.log
+Browse.VC.db
+
+# ============ CMake 构建目录 ============
+build/
+
+# ============ 第三方工具 ============
+# 别人写的软件，体积大且非本项目代码
+Mod开发工具、技能、规范/.tools/
+
+# ============ 嵌套的独立 git 仓库 ============
+# 每个都是单独克隆来的仓库。直接提交只会存成一个空壳（真正的文件不会进仓库），
+# 所以整体排除；要纳管的话应该用 git submodule。
+AstlibraMod/universal-modder/
+AstlibraMod/.tmp-x64dbg-mcp/
+AstlibraMod/tools/cheatengine-mcp-bridge/
+Mod开发工具、技能、规范/模板/
+
+# ============ 临时目录 ============
+.tmp-*/
+.playwright-mcp/
+
+# ============ 运行时日志 ============
+*.log

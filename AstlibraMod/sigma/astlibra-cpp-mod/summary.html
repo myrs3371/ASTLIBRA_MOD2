@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ASTLIBRA C++ Mod 学习小结</title>
+  <style>
+    :root { --bg:#08080c; --surface:rgba(255,255,255,.04); --border:rgba(255,255,255,.08); --text:#ededef; --muted:rgba(255,255,255,.55); --accent:#06b6d4; --green:#34d399; --amber:#fbbf24; }
+    * { box-sizing:border-box; } body { margin:0; background:var(--bg); color:var(--text); font-family:system-ui,"Microsoft YaHei",sans-serif; }
+    main { width:min(720px,calc(100% - 32px)); margin:48px auto; } h1 { margin:0 0 8px; font-size:30px; } h2 { font-size:18px; margin:28px 0 10px; }
+    p, li { color:var(--muted); line-height:1.6; } code { color:var(--text); } .card { padding:18px; margin-top:12px; border:1px solid var(--border); background:var(--surface); border-radius:8px; } .ok { color:var(--green); } .next { color:var(--amber); }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>今日学习小结</h1>
+    <p>ASTLIBRA C++ Mod 基础 · 2026-09-20 · 阶段进度 4/7</p>
+    <section class="card">
+      <h2>已完成</h2>
+      <ul>
+        <li>为加载器加入了 <code>GetLastError()</code> 错误码输出。</li>
+        <li>使用 <code>GetProcAddress</code> 查询计划中的 <code>InitializeMod</code> 导出函数。</li>
+        <li>观察到错误 127，确认 DLL 加载成功，但目标函数尚未导出。</li>
+        <li class="ok">理解了 <code>BOOL (WINAPI*)()</code> 函数指针类型的组成。</li>
+      </ul>
+    </section>
+    <section class="card">
+      <h2>今天掌握的关键点</h2>
+      <p><code>GetProcAddress</code> 从已加载 DLL 的导出表按名称取得通用函数地址；函数指针类型再向编译器描述该地址对应函数的返回值、调用约定和参数。</p>
+    </section>
+    <section class="card">
+      <h2>下次从这里继续</h2>
+      <p class="next">在 <code>dllmain.cpp</code> 中导出 <code>InitializeMod</code>，把日志写入移出 <code>DllMain</code>，随后重新运行加载器并验证卸载。</p>
+    </section>
+  </main>
+</body>
+</html>
