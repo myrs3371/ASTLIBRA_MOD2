@@ -35,9 +35,9 @@ AstlibraMod/x64/Release/DLLLoader64_F3E4.exe
 # ============ CMake 构建目录 ============
 build/
 
-# ============ 第三方工具 ============
-# 别人写的软件，体积大且非本项目代码
-Mod开发工具、技能、规范/.tools/
+# ============ 工具/技能/规范文件夹（整体不进仓库）============
+# 含 567 MB 第三方工具（.tools）和一个独立的模板仓库（模板），整体不公开。
+Mod开发工具、技能、规范/
 
 # ============ 嵌套的独立 git 仓库 ============
 # 每个都是单独克隆来的仓库。直接提交只会存成一个空壳（真正的文件不会进仓库），
@@ -45,7 +45,6 @@ Mod开发工具、技能、规范/.tools/
 AstlibraMod/universal-modder/
 AstlibraMod/.tmp-x64dbg-mcp/
 AstlibraMod/tools/cheatengine-mcp-bridge/
-Mod开发工具、技能、规范/模板/
 
 # ============ 临时目录 ============
 .tmp-*/
