@@ -27,6 +27,10 @@ AstlibraMod/Release/AstlibraMod.dll
 AstlibraMod/x64/Debug/AstlibraMod.dll
 AstlibraMod/x64/Release/AstlibraMod.dll
 AstlibraMod/x64dbg_mcp.dp64
+# 零散编译产物。
+# 注意：git rm --cached 之后必须同时写进这里，否则下一次 git add -A 会把它重新加回来。
+AstlibraMod/AstlibraMod/test.exe
+AstlibraMod/x64/Release/DLLLoader64_F3E4.exe
 
 # ============ CMake 构建目录 ============
 build/
