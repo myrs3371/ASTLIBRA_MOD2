@@ -1,2 +1,3 @@
-# ASTLIBRA_MOD2
-ASTLIBRA_MOD
+# ASTLIBRA 逆向mod
+最大弓箭数和左右箭头修改
+随时存档,触发正常存档流程
